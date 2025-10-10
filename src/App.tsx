@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Subastas from './pages/Subastas';
 import Perfil from './pages/Perfil';
+import "tailwindcss";
 import './App.css';
 import './index.css';
 
