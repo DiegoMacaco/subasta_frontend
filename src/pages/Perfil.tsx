@@ -17,9 +17,14 @@ interface PerfilProps {
 const Perfil: React.FC<PerfilProps> = ({ user, onNavigate }) => {
   if (!user) {
     return (
-      <div className="profile-container">
-        <h2>No hay usuario logueado</h2>
-        <button onClick={() => onNavigate('login')}>
+      <div className="max-w-2xl mx-auto mt-10 p-6 bg-qhatu-light rounded-lg shadow-lg text-center">
+        <h2 className="text-2xl font-poppins font-bold text-qhatu-dark mb-4">
+          No hay usuario logueado
+        </h2>
+        <button
+          onClick={() => onNavigate('login')}
+          className="px-6 py-2 bg-qhatu-accent text-qhatu-dark font-semibold rounded hover:bg-qhatu-dark hover:text-qhatu-light transition"
+        >
           Ir a Login
         </button>
       </div>
@@ -27,47 +32,47 @@ const Perfil: React.FC<PerfilProps> = ({ user, onNavigate }) => {
   }
 
   return (
-    <div className="profile-container">
-      <div className="profile-card">
-        <h2>Mi Perfil</h2>
-        
-        <div className="profile-info">
-          <div className="info-group">
-            <label>Nombre:</label>
-            <p>{user.firstName} {user.lastName}</p>
-          </div>
-          
-          <div className="info-group">
-            <label>Email:</label>
-            <p>{user.email}</p>
-          </div>
-          
-          <div className="info-group">
-            <label>Teléfono:</label>
-            <p>{user.phone}</p>
-          </div>
-          
-          <div className="info-group">
-            <label>Dirección:</label>
-            <p>{user.address}</p>
-          </div>
-          
-          {user.createdAt && (
-            <div className="info-group">
-              <label>Miembro desde:</label>
-              <p>{new Date(user.createdAt).toLocaleDateString()}</p>
-            </div>
-          )}
+    <div className="max-w-3xl mx-auto mt-10 p-6 bg-qhatu-light rounded-lg shadow-lg">
+      <h2 className="text-3xl font-poppins font-bold text-qhatu-dark mb-6 text-center">
+        Mi Perfil
+      </h2>
+
+      <div className="space-y-4 text-qhatu-dark">
+        <div className="flex justify-between">
+          <span className="font-semibold">Nombre:</span>
+          <span>{user.firstName} {user.lastName}</span>
         </div>
 
-        <div className="profile-actions">
-          <button 
-            onClick={() => onNavigate('home')}
-            className="back-btn"
-          >
-            Volver al Inicio
-          </button>
+        <div className="flex justify-between">
+          <span className="font-semibold">Email:</span>
+          <span>{user.email}</span>
         </div>
+
+        <div className="flex justify-between">
+          <span className="font-semibold">Teléfono:</span>
+          <span>{user.phone || '-'}</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span className="font-semibold">Dirección:</span>
+          <span>{user.address || '-'}</span>
+        </div>
+
+        {user.createdAt && (
+          <div className="flex justify-between">
+            <span className="font-semibold">Miembro desde:</span>
+            <span>{new Date(user.createdAt).toLocaleDateString()}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-8 text-center">
+        <button
+          onClick={() => onNavigate('home')}
+          className="px-6 py-2 bg-qhatu-accent text-qhatu-dark font-semibold rounded hover:bg-qhatu-dark hover:text-qhatu-light transition"
+        >
+          Volver al Inicio
+        </button>
       </div>
     </div>
   );

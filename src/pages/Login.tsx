@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 
-interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-}
-
 interface LoginProps {
-  onLogin: (user: User) => void;
+  onLogin: (user: any) => void;
   onNavigate: (page: string) => void;
 }
 
@@ -16,91 +9,54 @@ const Login: React.FC<LoginProps> = ({ onLogin, onNavigate }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Usuarios de prueba
-  const testUsers = [
-    {
-      id: '1',
-      email: 'admin@test.com',
-      password: '123456',
-      firstName: 'Admin',
-      lastName: 'Test'
-    },
-    {
-      id: '2', 
-      email: 'usuario@test.com',
-      password: '123456',
-      firstName: 'Usuario',
-      lastName: 'Test'
-    }
-  ];
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Buscar usuario
-    const user = testUsers.find(u => u.email === email && u.password === password);
-    
-    if (user) {
-      const { password: _, ...userWithoutPassword } = user; // Remover password
-      onLogin(userWithoutPassword);
-      alert('¡Login exitoso!');
-    } else {
-      alert('Credenciales incorrectas. Usa: admin@test.com / 123456');
-    }
+    const user = {
+      id: email,      
+      email,
+      firstName: '',
+      lastName: ''
+    };
+    onLogin(user); 
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
-      <h2>Iniciar Sesión</h2>
+    <div className="max-w-md mx-auto mt-12 p-6 bg-qhatu-light rounded shadow font-poppins">
+      <h2 className="text-2xl font-bold mb-6 text-qhatu-dark text-center">Iniciar Sesión</h2>
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label>Email:</label>
+        <div className="mb-4">
+          <label className="block mb-1 font-medium text-qhatu-text">Email:</label>
           <input 
             type="email" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+            className="w-full px-3 py-2 border border-qhatu-base rounded focus:outline-none focus:ring-2 focus:ring-qhatu-accent"
             required 
           />
         </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label>Contraseña:</label>
+        <div className="mb-4">
+          <label className="block mb-1 font-medium text-qhatu-text">Contraseña:</label>
           <input 
             type="password" 
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+            className="w-full px-3 py-2 border border-qhatu-base rounded focus:outline-none focus:ring-2 focus:ring-qhatu-accent"
             required 
           />
         </div>
         <button 
           type="submit"
-          style={{
-            width: '100%',
-            padding: '10px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
+          className="w-full bg-qhatu-base text-qhatu-light py-2 rounded hover:bg-qhatu-dark transition"
         >
           Ingresar
         </button>
       </form>
-      
-      <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        <p>¿No tienes cuenta? </p>
+
+      <div className="mt-6 text-center">
+        <p className="text-qhatu-text">¿No tienes cuenta?</p>
         <button 
           onClick={() => onNavigate('registro')}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: 'transparent',
-            color: '#007bff',
-            border: '1px solid #007bff',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
+          className="mt-2 px-4 py-2 border border-qhatu-base text-qhatu-base rounded hover:bg-qhatu-accent hover:text-qhatu-dark transition"
         >
           Regístrate aquí
         </button>
