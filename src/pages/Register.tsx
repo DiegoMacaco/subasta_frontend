@@ -5,6 +5,7 @@ interface User {
   email: string;
   firstName: string;
   lastName: string;
+
   password?: string;
   phone?: string;
   address?: string;
@@ -84,14 +85,27 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onNavigate }) => {
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="lastName" className="mb-1 font-semibold text-qhatu-dark">Apellido</label>
+            <label htmlFor="lastName" className="mb-1 font-semibold text-qhatu-dark">Apellido Paterno</label>
             <input
               type="text"
               id="lastName"
               name="lastName"
               value={formData.lastName}
               onChange={handleChange}
-              placeholder="Tu apellido"
+              placeholder="Apellido Paterno"
+              required
+              className="p-2 border border-qhatu-dark rounded focus:outline-none focus:ring-2 focus:ring-qhatu-accent"
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="lastName" className="mb-1 font-semibold text-qhatu-dark">Apellido Materno</label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+              placeholder="Apellido Materno"
               required
               className="p-2 border border-qhatu-dark rounded focus:outline-none focus:ring-2 focus:ring-qhatu-accent"
             />
@@ -120,21 +134,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onNavigate }) => {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder="+1 234 567 8900"
-            required
-            className="p-2 border border-qhatu-dark rounded focus:outline-none focus:ring-2 focus:ring-qhatu-accent"
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label htmlFor="address" className="mb-1 font-semibold text-qhatu-dark">Dirección </label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            placeholder="Tu dirección"
+            placeholder=""
             required
             className="p-2 border border-qhatu-dark rounded focus:outline-none focus:ring-2 focus:ring-qhatu-accent"
           />
