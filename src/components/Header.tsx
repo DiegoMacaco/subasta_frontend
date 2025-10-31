@@ -8,21 +8,26 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
   return (
-    <header className="bg-qhatu-dark text-qhatu-light font-poppins shadow-md">
-      <nav className="max-w-7xl mx-auto flex justify-between items-center p-4">
-        <div className="text-2xl font-bold cursor-pointer" onClick={() => onNavigate('home')}>
+    <header className="bg-[#2E594E] text-[#F8F9F8] shadow-lg">
+      <nav className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+        <div 
+          className="text-2xl font-bold cursor-pointer hover:text-[#EFD780] transition-colors"
+          onClick={() => onNavigate('home')}
+        >
           Qhatu
         </div>
-        <div className="flex items-center space-x-4">
+        
+        <div className="flex items-center space-x-6">
           <button
             onClick={() => onNavigate('home')}
-            className="text-qhatu-light hover:text-qhatu-accent font-semibold"
+            className="text-[#F8F9F8] hover:text-[#EFD780] font-semibold transition-colors"
           >
             Inicio
           </button>
+          
           <button
             onClick={() => onNavigate('subastas')}
-            className="text-qhatu-light hover:text-qhatu-accent font-semibold"
+            className="text-[#F8F9F8] hover:text-[#EFD780] font-semibold transition-colors"
           >
             Subastas
           </button>
@@ -31,14 +36,14 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
             <>
               <button
                 onClick={() => onNavigate('perfil')}
-                className="text-qhatu-light hover:text-qhatu-accent font-semibold"
+                className="text-[#F8F9F8] hover:text-[#EFD780] font-semibold transition-colors"
               >
                 Mi Perfil
               </button>
-              <span className="text-qhatu-accent ml-2">Hola, {user.firstName}</span>
+              
               <button
                 onClick={onLogout}
-                className="bg-qhatu-accent text-qhatu-dark px-3 py-1 rounded hover:bg-qhatu-light transition"
+                className="bg-[#EFD780] text-[#2E594E] px-4 py-2 rounded-lg font-semibold hover:bg-[#89C9B8] transition-colors"
               >
                 Cerrar Sesión
               </button>
@@ -46,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
           ) : (
             <button
               onClick={() => onNavigate('login')}
-              className="bg-qhatu-accent text-qhatu-dark px-3 py-1 rounded hover:bg-qhatu-light transition"
+              className="bg-[#EFD780] text-[#2E594E] px-4 py-2 rounded-lg font-semibold hover:bg-[#89C9B8] transition-colors"
             >
               Iniciar Sesión
             </button>
