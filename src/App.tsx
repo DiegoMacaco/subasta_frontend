@@ -5,6 +5,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Subastas from './pages/Subastas';
 import Perfil from './pages/Perfil';
+import CrearSubasta from './pages/CrearSubasta';
+
 import "tailwindcss";
 import './App.css';
 import './index.css';
@@ -41,7 +43,6 @@ function App() {
   }, []);
 
   const handleLogin = (userData: User) => {
-   
     const completeUser: User = {
       ...userData,
       phone: userData.phone || '',
@@ -61,7 +62,6 @@ function App() {
   };
 
   const handleRegister = (userData: User) => {
-   
     const completeUser: User = {
       ...userData,
       phone: '',
@@ -74,7 +74,6 @@ function App() {
     setCurrentPage('home');
   };
 
- 
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'home':
@@ -87,21 +86,23 @@ function App() {
         return user ? <Subastas user={user} onNavigate={setCurrentPage} /> : <Login onLogin={handleLogin} onNavigate={setCurrentPage} />;
       case 'perfil':
         return user ? <Perfil user={user} onNavigate={setCurrentPage} /> : <Login onLogin={handleLogin} onNavigate={setCurrentPage} />;
+      case 'crear-subasta':
+        return user ? <CrearSubasta user={user} onNavigate={setCurrentPage} /> : <Login onLogin={handleLogin} onNavigate={setCurrentPage} />;
       default:
         return <Home user={user} onNavigate={setCurrentPage} />;
     }
   };
 
   return (
-    <div className="app">
+    <div className="min-h-screen bg-[#F8F9F8]">
       <Header 
         user={user} 
         onLogout={handleLogout} 
         onNavigate={setCurrentPage} 
       />
       
-      <main className="main-content">
-        <div className="container">
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-6">
           {renderCurrentPage()}
         </div>
       </main>
