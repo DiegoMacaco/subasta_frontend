@@ -16,7 +16,7 @@ interface User {
   email: string;
   firstName: string;
   lastName: string;
-  password?: string;       
+  password?: string;
   phone?: string;
   address?: string;
   createdAt?: string;
@@ -83,7 +83,7 @@ function App() {
       case 'registro':
         return <Register onRegister={handleRegister} onNavigate={setCurrentPage} />;
       case 'subastas':
-        return user ? <Subastas user={user} onNavigate={setCurrentPage} /> : <Login onLogin={handleLogin} onNavigate={setCurrentPage} />;
+        return <Subastas user={user} onNavigate={setCurrentPage} />;
       case 'perfil':
         return user ? <Perfil user={user} onNavigate={setCurrentPage} /> : <Login onLogin={handleLogin} onNavigate={setCurrentPage} />;
       case 'crear-subasta':
@@ -92,19 +92,20 @@ function App() {
         return <Home user={user} onNavigate={setCurrentPage} />;
     }
   };
+  const isAuthPage = currentPage === 'login' || currentPage === 'registro';
 
   return (
     <div className="min-h-screen bg-[#F8F9F8]">
-      <Header 
-        user={user} 
-        onLogout={handleLogout} 
-        onNavigate={setCurrentPage} 
-      />
-      
-      <main className="flex-1">
-        <div className="container mx-auto px-4 py-6">
-          {renderCurrentPage()}
-        </div>
+      {!isAuthPage && (
+        <Header 
+          user={user} 
+          onLogout={handleLogout} 
+          onNavigate={setCurrentPage} 
+        />
+      )}
+
+      <main className={`flex-1 ${isAuthPage ? '' : 'container mx-auto px-4 py-6'}`}>
+        {renderCurrentPage()}
       </main>
     </div>
   );
