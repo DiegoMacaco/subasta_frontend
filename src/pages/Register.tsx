@@ -70,12 +70,13 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onNavigate }) => {
         alt="Fondo Qhatu"
         className="absolute inset-0 w-full h-full object-cover opacity-45"
       />
-      <div className="absolute inset-0 bg-[#60A5FA]/30"></div>
+      <div className="absolute inset-0 bg-[#003366]/30"></div>
       <div className="relative z-10 w-full max-w-2xl p-8 bg-white/10 backdrop-blur-md rounded-xl shadow-lg text-white">
         <h1 className="text-4xl font-black mb-4 text-center">Únete a Qhatu</h1>
         <p className="text-center text-slate-200 mb-8">Crea tu cuenta y empieza a descubrir las mejores subastas.</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} 
+        className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               type="text"
@@ -84,7 +85,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onNavigate }) => {
               value={formData.firstName}
               onChange={handleChange}
               required
-              className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#EFD780] w-full"
+              className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFD700] w-full"
             />
             <input
               type="text"
@@ -93,7 +94,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onNavigate }) => {
               value={formData.lastName}
               onChange={handleChange}
               required
-              className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#EFD780] w-full"
+              className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFD700] w-full"
             />
             <input
               type="text"
@@ -102,7 +103,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onNavigate }) => {
               value={formData.motherLastName}
               onChange={handleChange}
               required
-              className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#EFD780] md:col-span-2 w-full"
+              className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFD700] md:col-span-2 w-full"
             />
           </div>
 
@@ -113,7 +114,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onNavigate }) => {
             value={formData.email}
             onChange={handleChange}
             required
-            className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#EFD780] w-full"
+            className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFD700] w-full"
           />
 
           <input
@@ -123,7 +124,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onNavigate }) => {
             value={formData.phone}
             onChange={handleChange}
             required
-            className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#EFD780] w-full"
+            className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFD700] w-full"
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -134,7 +135,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onNavigate }) => {
               value={formData.password}
               onChange={handleChange}
               required
-              className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#EFD780] w-full"
+              className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFD700] w-full"
             />
             <input
               type="password"
@@ -143,13 +144,13 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onNavigate }) => {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#EFD780] w-full"
+              className="p-3 rounded-lg bg-white/20 border border-white/30 placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFD700] w-full"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-3 bg-[#EFD780] text-[#2E594E] font-bold rounded-lg hover:bg-[#f5e197] transition-colors"
+            className="w-full py-3 bg-[#FFD700] text-[#101c22] font-bold rounded-lg hover:bg-[#E0BB4A] transition-colors"
           >
             Crear Cuenta
           </button>
@@ -159,7 +160,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onNavigate }) => {
           <p className="mb-3">¿Ya tienes cuenta?</p>
           <button
             onClick={() => onNavigate('login')}
-            className="bg-[#13a4ec] px-6 py-2 rounded-lg font-semibold hover:bg-[#1192d4] transition-colors"
+            className="bg-[#003366] px-6 py-2 rounded-lg font-semibold hover:bg-[#004488] transition-colors"
           >
             Inicia sesión aquí
           </button>

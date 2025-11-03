@@ -28,7 +28,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onNavigate }) => {
         className="absolute inset-0 w-full h-full object-cover opacity-45"
       />
 
-      <div className="absolute inset-0 bg-[#60A5FA]/30"></div>
+      <div className="absolute inset-0 bg-[#003366]/30"></div>
       <div className="relative z-10 text-center max-w-lg p-8">
         <h1 className="text-5xl font-black text-white mb-4">Únete a Qhatu</h1>
         <p className="text-lg text-slate-200 mb-10">
@@ -45,7 +45,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onNavigate }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tu@email.com"
-              className="px-4 py-3 rounded-lg bg-white/10 text-white border border-white/30 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#EFD780]"
+              className="px-4 py-3 rounded-lg bg-white/10 text-white border border-white/30 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
               required
             />
           </label>
@@ -57,14 +57,14 @@ const Login: React.FC<LoginProps> = ({ onLogin, onNavigate }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="px-4 py-3 rounded-lg bg-white/10 text-white border border-white/30 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#EFD780]"
+              className="px-4 py-3 rounded-lg bg-white/10 text-white border border-white/30 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
               required
             />
           </label>
 
           <button
             type="submit"
-            className="bg-[#EFD780] text-[#2E594E] font-bold py-3 rounded-lg hover:bg-[#f5e197] transition-colors"
+            className="bg-[#FFD700] text-[#003366] font-bold py-3 rounded-lg hover:bg-[#E0BB4A] transition-colors"
           >
             Ingresar
           </button>
@@ -73,7 +73,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onNavigate }) => {
         <div className="mt-8">
           <button
             onClick={() => onNavigate('registro')}
-            className="bg-[#3B82F6] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#BFDBFE] transition-colors"
+            className="bg-[#003366] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#004488] transition-colors"
           >
             Crear cuenta nueva
           </button>
