@@ -122,37 +122,24 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
     }
   };
 
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#F8F9F8]">
-        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center border-t-4 border-[#89C9B8]">
-          <div className="text-6xl mb-4">🔒</div>
-          <h2 className="text-2xl font-bold text-[#2E594E] mb-4">Acceso Requerido</h2>
-          <p className="text-gray-600 mb-6">
-            Debes iniciar sesión para ver las subastas
-          </p>
-          <button
-            onClick={() => onNavigate("login")}
-            className="w-full px-6 py-3 bg-[#89C9B8] text-white font-semibold rounded-lg hover:bg-[#2E594E] transition-colors"
-          >
-            Iniciar Sesión
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[#F8F9F8] p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-[#2E594E]">Subastas Activas</h1>
-          <button
-            onClick={() => setMostrarModal(true)}
-            className="px-6 py-3 bg-[#89C9B8] text-white font-semibold rounded-lg hover:bg-[#2E594E] transition-colors"
-          >
-            + Agregar Producto
-          </button>
+         <button
+  onClick={() => {
+    if (!user) {
+      alert("Debes iniciar sesión para realizar una oferta.");
+      onNavigate("login");
+      return;
+    }else
+    setMostrarModal(true);
+  }}
+  className="px-6 py-3 bg-[#89C9B8] text-white font-semibold rounded-lg hover:bg-[#2E594E] transition-colors"
+>
+Agregar Producto
+</button>
         </div>
 
         {subastas.length === 0 ? (
@@ -161,11 +148,19 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
             <p className="text-xl text-gray-600 mb-2">No hay subastas publicadas</p>
             <p className="text-gray-500 mb-6">¡Sé el primero en crear una!</p>
             <button
-              onClick={() => setMostrarModal(true)}
-              className="px-6 py-3 bg-[#89C9B8] text-white font-semibold rounded-lg hover:bg-[#2E594E] transition-colors"
-            >
-              Crear mi primera subasta
-            </button>
+              onClick={() => {
+                if (!user) {
+                  alert("Debes iniciar sesión para realizar una oferta.");
+                  onNavigate("login");
+                return;
+                }else
+                setMostrarModal(true);
+                
+                }}
+                className="px-6 py-3 bg-[#89C9B8] text-white font-semibold rounded-lg hover:bg-[#2E594E] transition-colors"
+                >
+                Crear mi primera subasta
+              </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -210,10 +205,16 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
                   </div>
 
                   <button
-                    onClick={() => handlePujar(subasta.id)}
-                    className="w-full py-3 bg-[#89C9B8] text-white font-semibold rounded-lg hover:bg-[#2E594E] transition-colors"
-                  >
-                    Realizar Oferta
+                    onClick={() => {
+                      if (!user) {
+                        alert("Debes iniciar sesión para realizar una oferta.");
+                        onNavigate("login");
+                    return;
+                }
+                    handlePujar(subasta.id);
+                }}
+                  className="w-full py-3 bg-[#89C9B8] text-white font-semibold rounded-lg hover:bg-[#2E594E] transition-colors">
+                  Realizar Oferta
                   </button>
                 </div>
               </div>
