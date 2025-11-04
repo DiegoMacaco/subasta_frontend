@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
     >
       <nav className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 space-x-6">
         <div
-          className="text-3xl font-bold text-[#2E594E] cursor-pointer hover:text-[#1D4036] transition-colors whitespace-nowrap"
+          className="text-3xl font-bold text-[#003366] cursor-pointer hover:text-[#003366] transition-colors whitespace-nowrap"
           onClick={() => onNavigate("home")}
         >
           Qhatu
@@ -43,7 +43,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
             placeholder="Buscar artículos..."
             className="flex-1 bg-transparent outline-none text-gray-700 px-4 py-2 text-sm"
           />
-          <button className="bg-[#2E594E] hover:bg-[#24493F] text-white px-5 flex items-center justify-center">
+          <button className="bg-[#003366] hover:bg-[#101c22] text-white px-5 flex items-center justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -63,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
         <div className="flex items-center space-x-5">
           <button
             onClick={() => onNavigate("subastas")}
-            className="text-gray-600 hover:text-[#2E594E] flex items-center gap-1"
+            className="text-gray-600 hover:text-[#003366 ] flex items-center gap-1"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
           </button>
           <button
             onClick={() => onNavigate("carrito")}
-            className="text-gray-600 hover:text-[#2E594E]"
+            className="text-gray-600 hover:text-[#003366 ]"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -102,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
           </button>
           <button
             onClick={() => onNavigate("notificaciones")}
-            className="text-gray-600 hover:text-[#2E594E] relative group"
+            className="text-gray-600 hover:text-[#003366 ] relative group"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +128,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
             >
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="bg-[#2E594E] text-white font-semibold w-9 h-9 rounded-full flex items-center justify-center hover:bg-[#1D4036]"
+                className="bg-[#003366] text-white font-semibold w-9 h-9 rounded-full flex items-center justify-center hover:bg-[#101c22]"
               >
                 {getInitial(user.firstName)}
               </button>
