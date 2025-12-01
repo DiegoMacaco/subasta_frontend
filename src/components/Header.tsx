@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { FaSearch } from "react-icons/fa";
 
 interface HeaderProps {
   user: any;
@@ -10,6 +11,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+
 
   const getInitial = (name: string) => (name ? name.charAt(0).toUpperCase() : "?");
 
@@ -25,13 +27,13 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full bg-white shadow-md border-b border-gray-100 transition-transform duration-300 z-50 ${
+      className={`fixed top-0 left-0 w-full bg-[#101c22] transition-transform duration-300 z-50 ${
         showHeader ? "translate-y-0" : "-translate-y-full"
       }`}
     >
       <nav className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 space-x-6">
         <div
-          className="text-3xl font-bold text-[#003366] cursor-pointer hover:text-[#003366] transition-colors whitespace-nowrap"
+          className="text-3xl font-bold text-[#ffff] cursor-pointer hover:text-[#F2F2F2] transition-colors whitespace-nowrap"
           onClick={() => onNavigate("home")}
         >
           Qhatu
@@ -40,49 +42,21 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
         <div className="flex flex-1 max-w-3xl border border-gray-300 rounded-full bg-gray-50 overflow-hidden shadow-sm">
           <input
             type="text"
-            placeholder="Buscar artículos..."
+            placeholder="Buscar.. "
             className="flex-1 bg-transparent outline-none text-gray-700 px-4 py-2 text-sm"
           />
-          <button className="bg-[#003366] hover:bg-[#101c22] text-white px-5 flex items-center justify-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z"
-              />
-            </svg>
+          <button className="bg-[#101c22] hover:bg-[#101c22] text-white px-5 flex items-center justify-center">
+            <FaSearch />
           </button>
         </div>
         <div className="flex items-center space-x-5">
           <button
             onClick={() => onNavigate("subastas")}
-            className="text-gray-600 hover:text-[#003366 ] flex items-center gap-1"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
+            className="text-gray-600 hover:text-[#ffff] flex items-center gap-1">
             <span className="hidden sm:inline text-sm font-medium">Vender</span>
           </button>
           <button
-            onClick={() => onNavigate("carrito")}
+            onClick={() => onNavigate("crear-subasta")}
             className="text-gray-600 hover:text-[#003366 ]"
           >
             <svg
