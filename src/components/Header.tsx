@@ -38,17 +38,6 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
         >
           Qhatu
         </div>
-
-        <div className="flex flex-1 max-w-3xl border border-gray-300 rounded-full bg-gray-50 overflow-hidden shadow-sm">
-          <input
-            type="text"
-            placeholder="Buscar.. "
-            className="flex-1 bg-transparent outline-none text-gray-700 px-4 py-2 text-sm"
-          />
-          <button className="bg-[#101c22] hover:bg-[#101c22] text-white px-5 flex items-center justify-center">
-            <FaSearch />
-          </button>
-        </div>
         <div className="flex items-center space-x-5">
           <button
             onClick={() => onNavigate("subastas")}
@@ -138,7 +127,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
           ) : (
             <button
               onClick={() => onNavigate("login")}
-              className="bg-[#2E594E] text-white px-4 py-2 rounded-full font-semibold hover:bg-[#1D4036] transition-colors"
+              className="bg-[#003366] text-white px-4 py-2 rounded-full font-semibold hover:bg-[#FFD700] hover:text-black transition-colors"
             >
               Iniciar Sesión
             </button>
