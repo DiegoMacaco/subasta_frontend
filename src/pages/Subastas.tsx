@@ -82,7 +82,7 @@ const Subastas: React.FC<SubastasProps> = ({
 
         {subastas.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center">
-            <div className="text-6xl mb-4">📦</div>
+            <div className="text-6xl mb-4"></div>
             <p className="text-xl text-gray-600 mb-2">
               No hay subastas publicadas
             </p>

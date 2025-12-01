@@ -39,7 +39,7 @@ const Home: React.FC<HomeProps> = ({ user, onNavigate, subastas }) => {
             <div className="text-6xl mb-4"></div>
             <p className="text-xl text-gray-600 mb-2">No hay subastas disponibles</p>
             <p className="text-gray-500 mb-6">
-              {user ? '¡Sé el primero en crear una!' : 'Inicia sesión para crear subastas'}
+              {user ? '¡Sé el primero en crear una!' : ''}
             </p>
             {user && (
               <button
