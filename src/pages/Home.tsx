@@ -36,7 +36,7 @@ const Home: React.FC<HomeProps> = ({ user, onNavigate, subastas }) => {
 
         {subastas.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center">
-            <div className="text-6xl mb-4">🏷️</div>
+            <div className="text-6xl mb-4"></div>
             <p className="text-xl text-gray-600 mb-2">No hay subastas disponibles</p>
             <p className="text-gray-500 mb-6">
               {user ? '¡Sé el primero en crear una!' : 'Inicia sesión para crear subastas'}
@@ -67,7 +67,7 @@ const Home: React.FC<HomeProps> = ({ user, onNavigate, subastas }) => {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-6xl">📷</span>
+                      <span className="text-6xl"></span>
                     </div>
                   )}
                   <div className="absolute top-2 right-2 bg-[#FFD700] text-black text-xs font-bold px-2 py-1 rounded-full">

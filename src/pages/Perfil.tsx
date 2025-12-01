@@ -39,9 +39,9 @@ const Perfil: React.FC<PerfilProps> = ({ user, onNavigate }) => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#F8F9F8] py-12 px-4">
-      <div className="max-w-3xl w-full bg-white p-8 rounded-xl shadow-lg border-t-4 border-[#89C9B8]">
+      <div className="max-w-3xl w-full bg-white p-8 rounded-xl shadow-lg border-t-4 border-[#003366]">
         <div className="text-center mb-8">
-          <div className="w-24 h-24 bg-gradient-to-br from-[#89C9B8] to-[#2E594E] rounded-full mx-auto mb-4 flex items-center justify-center text-white text-4xl font-bold">
+          <div className="w-24 h-24 bg-gradient-to-br from-[#101c22] to-[#003366] rounded-full mx-auto mb-4 flex items-center justify-center text-white text-4xl font-bold">
             {user.firstName.charAt(0).toUpperCase()}
           </div>
           <h2 className="text-3xl font-bold text-[#2E594E]">
@@ -101,7 +101,7 @@ const Perfil: React.FC<PerfilProps> = ({ user, onNavigate }) => {
           </button>
           <button
             onClick={() => onNavigate('subastas')}
-            className="flex-1 px-6 py-3 bg-[#89C9B8] text-white font-semibold rounded-lg hover:bg-[#2E594E] transition-colors"
+            className="flex-1 px-6 py-3 bg-[#FFD700] text-nega font-semibold rounded-lg hover:bg-[#E0BB4A] transition-colors"
           >
             Ver Subastas
           </button>
