@@ -22,6 +22,18 @@ interface User {
   createdAt?: string;
 }
 
+interface Subasta {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  duracion: number;
+  precio: string;
+  imagen: string | null;
+  creador: string;
+  creadaEn: string;
+  ofertaActual: number;
+}
+
 const authUtils = {
   getCurrentUser: (): User | null => {
     const user = localStorage.getItem('current_user');
@@ -36,6 +48,7 @@ const authUtils = {
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [currentPage, setCurrentPage] = useState('home');
+  const [subastas, setSubastas] = useState<Subasta[]>([]); // ← NUEVO: Estado para subastas
 
   useEffect(() => {
     const currentUser = authUtils.getCurrentUser();
@@ -74,24 +87,57 @@ function App() {
     setCurrentPage('home');
   };
 
+  const handleCrearSubasta = (nuevaSubasta: Omit<Subasta, 'ofertaActual'>) => {
+    const subastaCompleta: Subasta = {
+      ...nuevaSubasta,
+      ofertaActual: parseFloat(nuevaSubasta.precio)
+    };
+    setSubastas(prev => [...prev, subastaCompleta]);
+  };
+
+  const handleActualizarOferta = (id: number, nuevaOferta: number) => {
+    setSubastas(prev => 
+      prev.map(s => s.id === id ? { ...s, ofertaActual: nuevaOferta } : s)
+    );
+  };
+
+  const handleEliminarSubasta = (id: number) => {
+    setSubastas(prev => prev.filter(s => s.id !== id));
+  };
+
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'home':
-        return <Home user={user} onNavigate={setCurrentPage} />;
+        return <Home user={user} onNavigate={setCurrentPage} subastas={subastas} />;
       case 'login':
         return <Login onLogin={handleLogin} onNavigate={setCurrentPage} />;
       case 'registro':
         return <Register onRegister={handleRegister} onNavigate={setCurrentPage} />;
       case 'subastas':
-        return <Subastas user={user} onNavigate={setCurrentPage} />;
+        return (
+          <Subastas 
+            user={user} 
+            onNavigate={setCurrentPage} 
+            subastas={subastas}
+            onActualizarOferta={handleActualizarOferta}
+            onEliminarSubasta={handleEliminarSubasta}
+          />
+        );
       case 'perfil':
         return user ? <Perfil user={user} onNavigate={setCurrentPage} /> : <Login onLogin={handleLogin} onNavigate={setCurrentPage} />;
       case 'crear-subasta':
-        return user ? <CrearSubasta user={user} onNavigate={setCurrentPage} /> : <Login onLogin={handleLogin} onNavigate={setCurrentPage} />;
+        return user ? (
+          <CrearSubasta 
+            user={user} 
+            onNavigate={setCurrentPage}
+            onCrearSubasta={handleCrearSubasta}
+          />
+        ) : <Login onLogin={handleLogin} onNavigate={setCurrentPage} />;
       default:
-        return <Home user={user} onNavigate={setCurrentPage} />;
+        return <Home user={user} onNavigate={setCurrentPage} subastas={subastas} />;
     }
   };
+  
   const isAuthPage = currentPage === 'login' || currentPage === 'registro';
 
   return (
