@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface HeaderProps {
-  user?: any;
+  user?: { nombre?: string }; 
   onLogout?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,6 +25,8 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  const firstLetter = user?.nombre?.[0]?.toUpperCase() || "";
+
   return (
     <header
       className={`fixed top-0 left-0 w-full bg-[#101c22] transition-transform duration-300 z-50 ${
@@ -35,9 +38,16 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
           Qhatu
         </Link>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
 
-          {!user && (
+          <Link
+            to="/subastas"
+            className="text-white font-semibold px-4 py-2 hover:text-[#FFD700] transition-colors"
+          >
+            Subastas
+          </Link>
+
+          {!user ? (
             <Link
               to="/login"
               className="bg-[#003366] text-white px-4 py-2 rounded-full font-semibold 
@@ -45,14 +55,13 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
             >
               Iniciar Sesión
             </Link>
-          )}
-          {user && (
+          ) : (
             <button
-              onClick={onLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded-full font-semibold 
-                         hover:bg-red-400 transition-colors"
+              onClick={() => navigate("/perfil")}
+              className="w-10 h-10 bg-[#FFD700] text-black font-bold rounded-full 
+                         flex items-center justify-center hover:bg-white transition-colors"
             >
-              Cerrar Sesión
+              {firstLetter}
             </button>
           )}
 
