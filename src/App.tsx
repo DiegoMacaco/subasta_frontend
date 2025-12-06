@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import Header from './components/Header';
+import Footer from './components/Footer';
+
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -116,11 +118,11 @@ function AppContent() {
     setSubastas(prev => prev.filter(s => s.id !== id));
   };
 
-  
   const isAuthPage = location.pathname === '/login' || location.pathname === '/registro';
 
   return (
-    <div className="min-h-screen bg-[#F8F9F8]">
+    <div className="min-h-screen bg-[#F8F9F8] flex flex-col">
+
       {!isAuthPage && (
         <Header 
           user={user} 
@@ -179,12 +181,12 @@ function AppContent() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
+      {!isAuthPage && <Footer />}
     </div>
   );
 }
 
 function App() {
-
   return (
     <BrowserRouter>
       <AppContent />
