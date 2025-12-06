@@ -1,4 +1,6 @@
 import React from "react";
+import qImg from "../img/q.jpg";
+import lImg from "../img/l.jpg";
 
 interface Subasta {
   id: number;
@@ -18,116 +20,66 @@ interface HomeProps {
   subastas: Subasta[];
 }
 
-const Home: React.FC<HomeProps> = ({ user, onNavigate, subastas }) => {
+const Home: React.FC<HomeProps> = ({ user, onNavigate }) => {
   return (
     <div className="min-h-screen bg-[#F8F9F8]">
       <div className="h-[100px]" />
-      
-
-      <div className="mx-4 md:mx-8">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-[#333333]">
-            Subastas Destacadas
-          </h2>
-          <p className="text-gray-600">
-            {subastas.length} {subastas.length === 1 ? 'subasta' : 'subastas'} activas
+      <section className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+        <div>
+          <h1 className="text-4xl font-bold text-[#003366] mb-4">
+            Bienvenido a Qhatu
+          </h1>
+          <p className="text-gray-700 leading-relaxed">
+            Esta es una plataforma de subastas en línea concentrada en la ciudad 
+            de La Paz, Bolivia, donde puedes comprar y vender productos de tu interés
+            de manera fácil y segura.
           </p>
         </div>
 
-        {subastas.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-md p-12 text-center">
-            <div className="text-6xl mb-4"></div>
-            <p className="text-xl text-gray-600 mb-2">No hay subastas disponibles</p>
-            <p className="text-gray-500 mb-6">
-              {user ? '¡Sé el primero en crear una!' : ''}
-            </p>
-            {user && (
-              <button
-                onClick={() => onNavigate("crear-subasta")}
-                className="px-6 py-3 bg-[#003366] text-white font-semibold rounded-lg hover:bg-[#101c22] transition-colors"
-              >
-                Crear Subasta
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {subastas.map((subasta) => (
-              <div
-                key={subasta.id}
-                className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-t-4 border-[#89C9B8] cursor-pointer"
-                onClick={() => onNavigate("subastas")}
-              >
-                <div className="relative h-48 bg-gray-100">
-                  {subasta.imagen ? (
-                    <img
-                      src={subasta.imagen}
-                      alt={subasta.nombre}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-6xl"></span>
-                    </div>
-                  )}
-                  <div className="absolute top-2 right-2 bg-[#FFD700] text-black text-xs font-bold px-2 py-1 rounded-full">
-                    NUEVO
-                  </div>
-                </div>
+        <div className="w-full h-72 rounded-xl overflow-hidden shadow">
+          <img
+            src={qImg}
+            alt="Imagen de subastas"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </section>
+      <section className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+        <div className="w-full h-72 rounded-xl overflow-hidden shadow">
+          <img
+            src={lImg}
+            alt="Imagen informativa"
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-                <div className="p-5">
-                  <h3 className="text-lg font-bold text-[#333333] mb-2 line-clamp-1">
-                    {subasta.nombre}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2 min-h-[40px]">
-                    {subasta.descripcion || 'Sin descripción'}
-                  </p>
+        <div>
+          <h2 className="text-3xl font-bold text-[#2E594E] mb-4">
+            ¿Cómo funcionan?
+          </h2>
+          <p className="text-gray-700 leading-relaxed">
+            En Qhatu, los usuarios pueden crear subastas para vender sus productos.
+            Otros usuarios pueden pujar por estos productos, y al finalizar la subasta,
+            la persona con la oferta más alta gana el producto.
+          </p>
+        </div>
+      </section>
+      <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+        <h2 className="text-4xl font-bold text-[#003366] mb-6">
+          Regístrate ya
+        </h2>
 
-                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
-                    <div>
-                      <p className="text-xs text-gray-500">Oferta actual</p>
-                      <p className="text-xl font-bold text-[#EFD780]">
-                        ${subasta.ofertaActual.toFixed(2)}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-gray-500">Duración</p>
-                      <p className="text-base font-semibold text-[#2E594E]">
-                        {subasta.duracion} min
-                      </p>
-                    </div>
-                  </div>
+        <p className="text-lg text-gray-600 mb-8">
+          Que estas esperando para unirte a Qhatu y comenzar a explorar las mejores 
+          ofertas en productos únicos.
+        </p>
 
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
-                    <span>Por: {subasta.creador}</span>
-                    <span>{new Date(subasta.creadaEn).toLocaleDateString()}</span>
-                  </div>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onNavigate("subastas");
-                    }}
-                    className="w-full bg-[#89C9B8] text-white py-2.5 rounded-lg font-semibold hover:bg-[#2E594E] transition-colors"
-                  >
-                    Ver Detalles
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {subastas.length > 0 && (
-          <div className="text-center mt-8">
-            <button
-              onClick={() => onNavigate("subastas")}
-              className="px-8 py-3 bg-white text-[#003366] font-semibold rounded-lg border-2 border-[#003366] hover:bg-[#003366] hover:text-white transition-colors"
-            >
-              Ver Todas las Subastas ({subastas.length})
-            </button>
-          </div>
-        )}
+        <button
+          onClick={() => onNavigate("registro")}
+          className="px-10 py-4 bg-[#003366] text-white font-bold rounded-xl text-lg shadow-lg hover:bg-[#1b2e38] transition-all"
+        >
+          Suscribete ya!
+        </button>
       </div>
     </div>
   );
