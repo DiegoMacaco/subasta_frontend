@@ -5,6 +5,7 @@ interface User {
   email: string;
   firstName: string;
   lastName: string;
+  motherLastName?: string;
   password?: string;
   phone?: string;
   address?: string;
@@ -29,6 +30,14 @@ interface PerfilProps {
 
 const Perfil: React.FC<PerfilProps> = ({ user, onNavigate, subastas = [] }) => {
   const [tabActiva, setTabActiva] = useState<'activa' | 'ganada' | 'perdida'>('activa');
+
+  const handleLogout = () => {
+    // Confirmar antes de cerrar sesión
+    if (window.confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+      // Llamar a logout - App.tsx se encarga de la limpieza
+      onNavigate('logout');
+    }
+  };
 
   if (!user) {
     return (
@@ -56,7 +65,7 @@ const Perfil: React.FC<PerfilProps> = ({ user, onNavigate, subastas = [] }) => {
     <div className="min-h-screen bg-[#F8F9F8] py-20 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-4xl font-bold text-[#101c22]">Perfl</h1>
+          <h1 className="text-4xl font-bold text-[#101c22]">Perfil</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -96,9 +105,12 @@ const Perfil: React.FC<PerfilProps> = ({ user, onNavigate, subastas = [] }) => {
 
               <div className="mt-6 space-y-3">
                 <button
-                  onClick={() => onNavigate('logout')}
-                  className="w-full px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors text-sm"
-                   > Cerrar Secion </button>
+                  onClick={handleLogout}
+                  className="w-full px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors text-sm flex items-center justify-center gap-2"
+                >
+                  <span>🚪</span>
+                  Cerrar Sesión
+                </button>
               </div>
             </div>
           </div>
@@ -144,7 +156,6 @@ const Perfil: React.FC<PerfilProps> = ({ user, onNavigate, subastas = [] }) => {
               <div className="p-6">
                 {subastasFiltradas.length === 0 ? (
                   <div className="text-center py-12">
-                    
                     <h4 className="text-xl font-semibold text-[#2E594E] mb-2">
                       {tabActiva === 'activa' && 'No tienes subastas activas'}
                       {tabActiva === 'ganada' && 'No has ganado subastas aún'}
@@ -160,7 +171,7 @@ const Perfil: React.FC<PerfilProps> = ({ user, onNavigate, subastas = [] }) => {
                             {subasta.imagen ? (
                               <img src={subasta.imagen} alt={subasta.titulo} className="w-full h-full object-cover" />
                             ) : (
-                              <span className="text-4xl"></span>
+                              <span className="text-4xl">📦</span>
                             )}
                           </div>
                           
@@ -238,58 +249,4 @@ const Perfil: React.FC<PerfilProps> = ({ user, onNavigate, subastas = [] }) => {
   );
 };
 
-export default function App() {
-  const usuarioEjemplo: User = {
-    id: '1',
-    email: 'juan.perez@email.com',
-    firstName: 'Juan',
-    lastName: 'Pérez',
-    phone: '+591 78945612',
-    address: 'Av. Arce #2345, La Paz',
-    createdAt: '2023-06-15T10:00:00Z'
-  };
-
-  const subastasEjemplo: Subasta[] = [
-    {
-      id: '1',
-      titulo: 'iPhone 14 Pro Max 256GB - Nuevo en caja',
-      precioActual: 5000,
-      fechaFin: '2024-12-20T18:00:00',
-      imagen: 'https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=400',
-      miPuja: 5200,
-      estado: 'activa'
-    },
-    {
-      id: '2',
-      titulo: 'MacBook Air M2 - Como nuevo',
-      precioActual: 8500,
-      fechaFin: '2024-12-18T20:00:00',
-      miPuja: 8300,
-      estado: 'activa'
-    },
-    {
-      id: '3',
-      titulo: 'PlayStation 5 + 2 Controles',
-      precioActual: 4200,
-      fechaFin: '2024-12-10T15:00:00',
-      miPuja: 4500,
-      estado: 'ganada'
-    },
-    {
-      id: '4',
-      titulo: 'Samsung Galaxy S23 Ultra',
-      precioActual: 6800,
-      fechaFin: '2024-12-05T19:00:00',
-      miPuja: 6500,
-      estado: 'perdida'
-    }
-  ];
-
-  return (
-    <Perfil 
-      user={usuarioEjemplo}
-      onNavigate={(page) => console.log('Navegar a:', page)}
-      subastas={subastasEjemplo}
-    />
-  );
-}
+export default Perfil;

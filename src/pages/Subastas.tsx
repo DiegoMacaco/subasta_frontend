@@ -1,68 +1,71 @@
-import React, { useState } from "react";
-import { Clock, User, X, Upload } from "lucide-react";
-
-interface Subasta {
-  id: number;
-  nombre: string;
-  descripcion: string;
-  imagen: string | null;
-  precio: string;
-  ofertaActual: number;
-  duracion: number;
-  creadaEn: string;
-  creador: string;
-}
+import React, { useState, useEffect } from "react";
+import { Clock, User, X, Upload, Loader2 } from "lucide-react";
+import { productosAPI, subcategoriasAPI } from "../services/api";
+import type { Producto, SubcategoriaProducto } from "../types/Producto";
+import { formatearPrecioConSimbolo, parsePrecio } from "../utils/helpers";
 
 interface SubastasProps {
   user: any;
   onNavigate: (page: string) => void;
-  subastas: Subasta[];
-  onActualizarOferta: (id: number, nuevaOferta: number) => void;
-  onEliminarSubasta: (id: number) => void;
 }
 
-const Subastas: React.FC<SubastasProps> = ({
-  user,
-  onNavigate,
-  subastas,
-  onActualizarOferta,
-  onEliminarSubasta
-}) => {
-  const [ofertaInput, setOfertaInput] = useState<{ [key: number]: string }>({});
+const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [subcategorias, setSubcategorias] = useState<SubcategoriaProducto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
     precio: "",
-    duracion: "24",
-    imagen: ""
+    disponibilidad: "1",
+    subcategoriaId: "",
+    imagen: null as File | null,
   });
+  const [imagenPreview, setImagenPreview] = useState<string | null>(null);
 
-  const handlePujar = (subasta: Subasta) => {
-    const valor = parseFloat(ofertaInput[subasta.id] || "0");
+  // Cargar productos y subcategorías al montar
+  useEffect(() => {
+    cargarDatos();
+  }, []);
 
-    if (isNaN(valor) || valor <= 0) {
-      alert("Por favor ingresa una oferta válida");
-      return;
+  const cargarDatos = async () => {
+    try {
+      setLoading(true);
+      const [productosRes, subcategoriasRes] = await Promise.all([
+        productosAPI.obtenerActivos(),
+        subcategoriasAPI.obtenerTodas(),
+      ]);
+      
+      console.log('Productos recibidos:', productosRes.data);
+      setProductos(productosRes.data);
+      setSubcategorias(subcategoriasRes.data);
+      setError(null);
+    } catch (err: any) {
+      console.error('Error al cargar datos:', err);
+      setError(err.response?.data?.message || 'Error al cargar los datos');
+    } finally {
+      setLoading(false);
     }
-
-    if (valor <= subasta.ofertaActual) {
-      alert(`Tu oferta debe ser mayor a $${subasta.ofertaActual.toFixed(2)}`);
-      return;
-    }
-
-    onActualizarOferta(subasta.id, valor);
-    setOfertaInput({ ...ofertaInput, [subasta.id]: "" });
-    alert(`¡Oferta realizada exitosamente! Nueva oferta: $${valor.toFixed(2)}`);
   };
 
-  const handleEliminar = (id: number) => {
-    if (confirm("¿Estás seguro de que deseas eliminar esta subasta?")) {
-      onEliminarSubasta(id);
+  const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData({ ...formData, imagen: file });
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagenPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  const handleCrearSubasta = (e: React.FormEvent) => {
+  const handleCrearProducto = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!user) {
@@ -70,45 +73,91 @@ const Subastas: React.FC<SubastasProps> = ({
       return;
     }
 
-    const nuevaSubasta = {
-      id: Date.now(),
-      nombre: formData.nombre,
-      descripcion: formData.descripcion,
-      precio: formData.precio,
-      ofertaActual: parseFloat(formData.precio),
-      duracion: parseInt(formData.duracion),
-      imagen: formData.imagen || null,
-      creador: user.email,
-      creadaEn: new Date().toISOString()
-    };
+    if (!formData.subcategoriaId) {
+      alert("Por favor selecciona una categoría");
+      return;
+    }
 
-    alert("¡Subasta creada exitosamente!");
+    try {
+      setEnviando(true);
+      
+      const nuevoProducto = {
+        nombre: formData.nombre,
+        descripcion: formData.descripcion,
+        precio: parseFloat(formData.precio),
+        disponibilidad: parseInt(formData.disponibilidad),
+        subcategoriaId: parseInt(formData.subcategoriaId),
+        imagen: formData.imagen,
+      };
 
-    setFormData({
-      nombre: "",
-      descripcion: "",
-      precio: "",
-      duracion: "24",
-      imagen: ""
-    });
-
-    setMostrarModal(false);
-    onNavigate("subastas");
+      await productosAPI.crear(nuevoProducto);
+      
+      alert("¡Producto creado exitosamente!");
+      
+      // Reset form
+      setFormData({
+        nombre: "",
+        descripcion: "",
+        precio: "",
+        disponibilidad: "1",
+        subcategoriaId: "",
+        imagen: null,
+      });
+      setImagenPreview(null);
+      setMostrarModal(false);
+      
+      // Recargar productos
+      cargarDatos();
+    } catch (err: any) {
+      console.error('Error al crear producto:', err);
+      alert(err.response?.data?.message || 'Error al crear el producto');
+    } finally {
+      setEnviando(false);
+    }
   };
 
-  const calcularTiempoRestante = (creadaEn: string, duracion: number) => {
-    const inicio = new Date(creadaEn).getTime();
-    const fin = inicio + duracion * 60 * 60 * 1000;
-    const ahora = Date.now();
-    const restante = fin - ahora;
+  const handleEliminar = async (id: number) => {
+    if (!confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+      return;
+    }
 
-    if (restante <= 0) return "Finalizada";
-
-    const horas = Math.floor(restante / (1000 * 60 * 60));
-    const minutos = Math.floor((restante % (1000 * 60 * 60)) / (1000 * 60));
-
-    return `${horas}h ${minutos}m`;
+    try {
+      await productosAPI.eliminar(id);
+      alert("Producto eliminado exitosamente");
+      cargarDatos();
+    } catch (err: any) {
+      console.error('Error al eliminar:', err);
+      alert(err.response?.data?.message || 'Error al eliminar el producto');
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Cargando productos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 text-xl mb-4">⚠️ Error</div>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={cargarDatos}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white">
@@ -117,15 +166,17 @@ const Subastas: React.FC<SubastasProps> = ({
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-3 mx-auto text-center w-fit">Subastas</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-3 mx-auto text-center w-fit">
+                Productos en Subasta
+              </h1>
               <p className="text-gray-600">
-                {subastas.length} {subastas.length === 1 ? "subasta disponible" : "subastas disponibles"}
+                {productos.length} {productos.length === 1 ? "producto disponible" : "productos disponibles"}
               </p>
             </div>
             <button
               onClick={() => {
                 if (!user) {
-                  alert("Debes iniciar sesión para crear una subasta");
+                  alert("Debes iniciar sesión para crear un producto");
                   onNavigate("login");
                   return;
                 }
@@ -141,102 +192,96 @@ const Subastas: React.FC<SubastasProps> = ({
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-10">
-        {subastas.length === 0 ? (
+        {productos.length === 0 ? (
           <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-lg p-16 text-center border border-gray-200">
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">No hay subastas por el momento</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              No hay productos disponibles
+            </h3>
+            <p className="text-gray-600 mb-6">Sé el primero en agregar un producto</p>
+            <button
+              onClick={() => setMostrarModal(true)}
+              className="px-8 py-3 bg-[#101c22] text-white rounded-xl font-semibold hover:bg-gray-800"
+            >
+              Agregar Producto
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {subastas.map((subasta) => {
-              const esCreador = user && user.email === subasta.creador;
+            {productos.map((producto) => (
+              <div
+                key={producto.id}
+                className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:-translate-y-1"
+              >
+                <div className="relative">
+                  {producto.imagen ? (
+                    <img
+                      src={`http://localhost:3000${producto.imagen}`}
+                      alt={producto.nombre}
+                      className="w-full h-64 object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-400 text-lg">Sin imagen</span>
+                    </div>
+                  )}
 
-              return (
-                <div
-                  key={subasta.id}
-                  className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:-translate-y-1"
-                >
-                  <div className="relative">
-                    {subasta.imagen ? (
-                      <img
-                        src={subasta.imagen}
-                        alt={subasta.nombre}
-                        className="w-full h-64 object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-400 text-lg">Sin imagen</span>
-                      </div>
-                    )}
-
-                    <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-2 rounded-full flex items-center gap-1 shadow-lg">
-                      <Clock size={14} /> EN VIVO
-                    </div>
-                    {esCreador && (
-                      <button
-                        onClick={() => handleEliminar(subasta.id)}
-                        className="absolute top-3 right-3 bg-white text-red-600 w-9 h-9 rounded-full hover:bg-red-50 font-bold shadow-lg border-2 border-red-200 transition-all"
-                      >
-                        ×
-                      </button>
-                    )}
+                  <div className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-3 py-2 rounded-full flex items-center gap-1 shadow-lg">
+                    <Clock size={14} /> DISPONIBLE
                   </div>
-                  <div className="p-5">
-                    <h3 className="text-base font-bold text-gray-900 mb-3 line-clamp-2 min-h-[48px]">
-                      {subasta.nombre}
-                    </h3>
-                    <div className="mb-4 bg-green-50 rounded-2xl p-4">
-                      <p className="text-xs text-gray-600 mb-1">Puja actual</p>
-                      <p className="text-3xl font-bold text-green-600">
-                        ${subasta.ofertaActual.toFixed(2)}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Inicial: <span className="line-through">${parseFloat(subasta.precio).toFixed(2)}</span>
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between text-xs text-gray-600 mb-4 pb-4 border-b border-gray-200">
-                      <span className="flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-full">
-                        <Clock size={14} />
-                        {calcularTiempoRestante(subasta.creadaEn, subasta.duracion)}
-                      </span>
-                      <span className="flex items-center gap-1.5 bg-purple-50 px-3 py-1.5 rounded-full truncate max-w-[120px]">
-                        <User size={14} />
-                        {subasta.creador.split(" ")[0]}
-                      </span>
-                    </div>
-                    {user ? (
-                      <div className="flex gap-2">
-                        <input
-                          type="number"
-                          step="0.01"
-                          placeholder="Tu oferta"
-                          value={ofertaInput[subasta.id] || ""}
-                          onChange={(e) =>
-                            setOfertaInput({
-                              ...ofertaInput,
-                              [subasta.id]: e.target.value
-                            })
-                          }
-                          className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-                        />
-                        <button
-                          onClick={() => handlePujar(subasta)}
-                          className="px-5 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md"
-                        >
-                          Pujar
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => onNavigate("login")}
-                        className="w-full py-3 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-xl transition-all shadow-md"
-                      >
-                        Iniciar sesión para pujar
-                      </button>
-                    )}
-                  </div>
+                  
+                  {user && (
+                    <button
+                      onClick={() => handleEliminar(producto.id)}
+                      className="absolute top-3 right-3 bg-white text-red-600 w-9 h-9 rounded-full hover:bg-red-50 font-bold shadow-lg border-2 border-red-200 transition-all"
+                    >
+                      ×
+                    </button>
+                  )}
                 </div>
-              );
-            })}
+                
+                <div className="p-5">
+                  <h3 className="text-base font-bold text-gray-900 mb-3 line-clamp-2 min-h-[48px]">
+                    {producto.nombre}
+                  </h3>
+                  
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                    {producto.descripcion}
+                  </p>
+                  
+                  <div className="mb-4 bg-blue-50 rounded-2xl p-4">
+                    <p className="text-xs text-gray-600 mb-1">Precio base</p>
+                    <p className="text-3xl font-bold text-blue-600">
+                      {formatearPrecioConSimbolo(producto.precio)}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Disponibles: {producto.disponibilidad}
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center justify-between text-xs text-gray-600 mb-4 pb-4 border-b border-gray-200">
+                    <span className="bg-purple-50 px-3 py-1.5 rounded-full truncate">
+                      {producto.subcategoria?.nombre || 'Sin categoría'}
+                    </span>
+                  </div>
+                  
+                  {user ? (
+                    <button
+                      onClick={() => alert('Funcionalidad de pujar próximamente')}
+                      className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md"
+                    >
+                      Pujar
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => onNavigate("login")}
+                      className="w-full py-3 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-xl transition-all shadow-md"
+                    >
+                      Iniciar sesión para pujar
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -249,91 +294,86 @@ const Subastas: React.FC<SubastasProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Modal Crear Producto */}
       {mostrarModal && (
         <div className="fixed inset-0 backdrop-blur-md bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
             <div className="bg-[#101c22] px-8 py-6 flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-white">Crear nueva subasta</h2>
+              <h2 className="text-2xl font-bold text-white">Agregar nuevo producto</h2>
               <button
                 onClick={() => setMostrarModal(false)}
                 className="text-white hover:text-gray-200 p-2 hover:bg-white/20 rounded-full transition-colors"
+                disabled={enviando}
               >
                 <X size={24} />
               </button>
             </div>
 
             <div className="flex">
+              {/* Previsualización de imagen */}
               <div className="w-2/5 bg-gradient-to-br from-gray-100 to-gray-200 p-8 flex flex-col items-center justify-center border-r">
                 <div className="w-full aspect-square bg-white rounded-2xl shadow-inner overflow-hidden mb-6 relative group border-2 border-dashed border-gray-300 hover:border-[#101c22] transition-all">
-    
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                          const reader = new FileReader();
-                        reader.onloadend = () => {
-                          setFormData({ ...formData, imagen: reader.result as string });
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
+                    onChange={handleImagenChange}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                     title="Haz clic para subir una imagen"
+                    disabled={enviando}
                   />
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
-                    {formData.imagen ? (
+                    {imagenPreview ? (
                       <img 
-                        src={formData.imagen} 
+                        src={imagenPreview} 
                         alt="Previsualización" 
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <div className="text-gray-400 group-hover:text-[#101c22] transition-colors flex flex-col items-center">
-                
+                        <Upload size={48} />
                         <span className="text-sm font-bold mt-2">Subir imagen</span>
                       </div>
                     )}
                   </div>
                 </div>
-                <div className="w-full">
-                </div>
-
               </div>
 
+              {/* Formulario */}
               <div className="w-3/5 p-8 overflow-y-auto max-h-[calc(90vh-88px)]">
-                <form onSubmit={handleCrearSubasta} className="space-y-6">
+                <form onSubmit={handleCrearProducto} className="space-y-6">
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">
-                      Nombre del producto 
+                      Nombre del producto *
                     </label>
                     <input
                       type="text"
                       required
                       value={formData.nombre}
                       onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:[#101c22] focus:border-transparent"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#101c22] focus:border-transparent"
+                      disabled={enviando}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">
-                      Descripción 
+                      Descripción *
                     </label>
                     <textarea
                       required
                       value={formData.descripcion}
                       onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
                       rows={4}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:[#101c22] focus:border-transparent resize-none"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#101c22] focus:border-transparent resize-none"
+                      disabled={enviando}
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-bold text-gray-700 mb-2">
-                        Precio inicial
+                        Precio base *
                       </label>
                       <input
                         type="number"
@@ -341,27 +381,45 @@ const Subastas: React.FC<SubastasProps> = ({
                         required
                         value={formData.precio}
                         onChange={(e) => setFormData({ ...formData, precio: e.target.value })}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:[#101c22] focus:border-transparent"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#101c22] focus:border-transparent"
+                        disabled={enviando}
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-bold text-gray-700 mb-2">
-                        Duración (horas) 
+                        Cantidad disponible *
                       </label>
-                      <select
+                      <input
+                        type="number"
+                        min="1"
                         required
-                        value={formData.duracion}
-                        onChange={(e) => setFormData({ ...formData, duracion: e.target.value })}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:[#101c22] focus:border-transparent"
-                      >
-                        <option value="12">12 horas</option>
-                        <option value="24">24 horas</option>
-                        <option value="48">48 horas</option>
-                        <option value="72">72 horas</option>
-                        <option value="168">1 semana</option>
-                      </select>
+                        value={formData.disponibilidad}
+                        onChange={(e) => setFormData({ ...formData, disponibilidad: e.target.value })}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#101c22] focus:border-transparent"
+                        disabled={enviando}
+                      />
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                      Categoría *
+                    </label>
+                    <select
+                      required
+                      value={formData.subcategoriaId}
+                      onChange={(e) => setFormData({ ...formData, subcategoriaId: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#101c22] focus:border-transparent"
+                      disabled={enviando}
+                    >
+                      <option value="">Seleccionar categoría</option>
+                      {subcategorias.map((sub) => (
+                        <option key={sub.id} value={sub.id}>
+                          {sub.nombre} - {sub.categoria?.nombre}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="flex gap-4 pt-4">
@@ -369,14 +427,23 @@ const Subastas: React.FC<SubastasProps> = ({
                       type="button"
                       onClick={() => setMostrarModal(false)}
                       className="flex-1 px-6 py-4 border-2 border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-colors"
+                      disabled={enviando}
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 px-6 py-4 bg-[#101c22] hover:from-orange-600 hover:to-red-600 text-white font-bold rounded-xl shadow-lg transition-all"
+                      className="flex-1 px-6 py-4 bg-[#101c22] text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      disabled={enviando}
                     >
-                      Crear Subasta
+                      {enviando ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Creando...
+                        </>
+                      ) : (
+                        'Crear Producto'
+                      )}
                     </button>
                   </div>
                 </form>

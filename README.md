@@ -1,73 +1,74 @@
-# React + TypeScript + Vite
+# Dulce Tentación (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sistema web para la gestión integral de tiendas de repostería, diseñado para automatizar procesos y ofrecer una experiencia excepcional al cliente.
 
-Currently, two official plugins are available:
+## Tabla de Contenidos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Características](#características)
+- [Tecnologías](#tecnologías)
+- [Requisitos Previos](#requisitos-previos)
+- [Instalación](#instalación)
+- [Configuración](#configuración)
+- [Ejecución](#ejecución)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Scripts Disponibles](#scripts-disponibles)
 
-## React Compiler
+## Características
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+- Catálogo de productos de repostería
+- Gestión de usuarios y perfiles
+- Autenticación segura
 
-## Expanding the ESLint configuration
+- Interfaz intuitiva y atractiva
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tecnologías
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- *React* - Librería de JavaScript para interfaces de usuario
+- *Tailwind CSS* - Framework de CSS utility-first
+- *React Router* - Navegación entre páginas
+- *Axios* - Cliente HTTP para API requests
+- *Vite* - Build tool y dev server ultrarrápido
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Requisitos Previos
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Antes de comenzar, asegúrate de tener instalado:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- [Node.js](https://nodejs.org/) (v16 o superior)
+- [npm](https://www.npmjs.com/)
+- [Git](https://git-scm.com/)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+> *Nota:* Este frontend requiere que el backend esté ejecutándose. Revisa el [README del backend](https://github.com/blaze-darck/reposteria_backend) para instrucciones de instalación.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+##  Instalación
+
+### 1. Clonar el repositorio
+
+bash
+git clone https://github.com/blaze-darck/reposteria_frontend.git
+
+
+### 2. Navegar al directorio del proyecto
+
+bash
+cd reposteria_frontend
+
+
+### 3. Instalar dependencias
+
+Con npm:
+
+bash
+npm install
+
+
+## Configuración
+
+## Ejecución
+
+### Iniciar el servidor de desarrollo
+
+bash
+npm run dev
+
+
+La aplicación estará disponible en: http://localhost:5173/
