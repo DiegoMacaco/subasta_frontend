@@ -33,7 +33,6 @@ export interface Producto {
   fechaCreacion: string;
   fechaModificacion: string;
 
-  // Campos de puja
   enPuja: boolean;
   precioInicial: string | number | null;
   pujaActual: string | number | null;
@@ -67,7 +66,6 @@ export interface ActualizarProductoDTO {
   fechaFinPuja?: string;
 }
 
-// Helper para convertir precios
 export function convertirPrecioANumero(
   precio: string | number | null | undefined
 ): number {

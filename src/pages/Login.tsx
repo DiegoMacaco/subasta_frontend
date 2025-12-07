@@ -26,7 +26,6 @@ const Login: React.FC<LoginProps> = ({ onLogin, onNavigate }) => {
     e.preventDefault();
     setError('');
 
-    // Validación básica
     if (!email || !password) {
       setError('Por favor completa todos los campos');
       return;
@@ -35,13 +34,12 @@ const Login: React.FC<LoginProps> = ({ onLogin, onNavigate }) => {
     setLoading(true);
 
     try {
-      // Llamada a la API de login
+
       const response = await usuariosAPI.login({
         email: email,
         password: password,
       });
 
-      // Usuario autenticado exitosamente
       const usuarioAutenticado = response.data;
       
       const user: User = {
@@ -54,7 +52,6 @@ const Login: React.FC<LoginProps> = ({ onLogin, onNavigate }) => {
         createdAt: usuarioAutenticado.createdAt,
       };
 
-      // Guardar token si la API lo devuelve
       if (usuarioAutenticado.token) {
         localStorage.setItem('token', usuarioAutenticado.token);
       }

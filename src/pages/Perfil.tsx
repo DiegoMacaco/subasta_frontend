@@ -32,9 +32,8 @@ const Perfil: React.FC<PerfilProps> = ({ user, onNavigate, subastas = [] }) => {
   const [tabActiva, setTabActiva] = useState<'activa' | 'ganada' | 'perdida'>('activa');
 
   const handleLogout = () => {
-    // Confirmar antes de cerrar sesión
     if (window.confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-      // Llamar a logout - App.tsx se encarga de la limpieza
+
       onNavigate('logout');
     }
   };
