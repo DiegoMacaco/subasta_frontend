@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Clock, User, X, Upload, Loader2 } from "lucide-react";
+import { Clock, User, X, Upload, Loader2, Gavel } from "lucide-react";
 import { productosAPI, subcategoriasAPI } from "../services/api";
 import type { Producto, SubcategoriaProducto } from "../types/Producto";
+import { convertirPrecioANumero } from "../types/Producto";
 import { formatearPrecioConSimbolo, parsePrecio } from "../utils/helpers";
+import { ModalIniciarPuja } from "../iniciarpuja";
+import { ModalPujar } from "../pujar";
 
 interface SubastasProps {
   user: any;
@@ -11,12 +14,22 @@ interface SubastasProps {
 
 const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
-  const [subcategorias, setSubcategorias] = useState<SubcategoriaProducto[]>([]);
+  const [subcategorias, setSubcategorias] = useState<SubcategoriaProducto[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [enviando, setEnviando] = useState(false);
-  
+
+  // Estados para el modal de iniciar puja
+  const [mostrarModalIniciarPuja, setMostrarModalIniciarPuja] = useState(false);
+
+  // Estados para el modal de pujar
+  const [mostrarModalPujar, setMostrarModalPujar] = useState(false);
+  const [productoSeleccionado, setProductoSeleccionado] =
+    useState<Producto | null>(null);
+
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
@@ -27,7 +40,6 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
   });
   const [imagenPreview, setImagenPreview] = useState<string | null>(null);
 
-  // Cargar productos y subcategorías al montar
   useEffect(() => {
     cargarDatos();
   }, []);
@@ -39,14 +51,14 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
         productosAPI.obtenerActivos(),
         subcategoriasAPI.obtenerTodas(),
       ]);
-      
-      console.log('Productos recibidos:', productosRes.data);
+
+      console.log("Productos recibidos:", productosRes.data);
       setProductos(productosRes.data);
       setSubcategorias(subcategoriasRes.data);
       setError(null);
     } catch (err: any) {
-      console.error('Error al cargar datos:', err);
-      setError(err.response?.data?.message || 'Error al cargar los datos');
+      console.error("Error al cargar datos:", err);
+      setError(err.response?.data?.message || "Error al cargar los datos");
     } finally {
       setLoading(false);
     }
@@ -56,7 +68,7 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
     const file = e.target.files?.[0];
     if (file) {
       setFormData({ ...formData, imagen: file });
-      
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagenPreview(reader.result as string);
@@ -80,21 +92,31 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
 
     try {
       setEnviando(true);
-      
-      const nuevoProducto = {
+
+      const nuevoProducto: {
+        nombre: string;
+        descripcion: string;
+        precio: number;
+        disponibilidad: number;
+        subcategoriaId: number;
+        imagen?: File;
+      } = {
         nombre: formData.nombre,
         descripcion: formData.descripcion,
         precio: parseFloat(formData.precio),
         disponibilidad: parseInt(formData.disponibilidad),
         subcategoriaId: parseInt(formData.subcategoriaId),
-        imagen: formData.imagen,
       };
 
+      // Solo agregar imagen si existe
+      if (formData.imagen) {
+        nuevoProducto.imagen = formData.imagen;
+      }
+
       await productosAPI.crear(nuevoProducto);
-      
+
       alert("¡Producto creado exitosamente!");
-      
-      // Reset form
+
       setFormData({
         nombre: "",
         descripcion: "",
@@ -105,12 +127,10 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
       });
       setImagenPreview(null);
       setMostrarModal(false);
-      
-      // Recargar productos
       cargarDatos();
     } catch (err: any) {
-      console.error('Error al crear producto:', err);
-      alert(err.response?.data?.message || 'Error al crear el producto');
+      console.error("Error al crear producto:", err);
+      alert(err.response?.data?.message || "Error al crear el producto");
     } finally {
       setEnviando(false);
     }
@@ -126,9 +146,48 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
       alert("Producto eliminado exitosamente");
       cargarDatos();
     } catch (err: any) {
-      console.error('Error al eliminar:', err);
-      alert(err.response?.data?.message || 'Error al eliminar el producto');
+      console.error("Error al eliminar:", err);
+      alert(err.response?.data?.message || "Error al eliminar el producto");
     }
+  };
+
+  const handleIniciarPuja = (producto: Producto) => {
+    if (!user) {
+      alert("Debes iniciar sesión para iniciar una puja");
+      onNavigate("login");
+      return;
+    }
+
+    setProductoSeleccionado(producto);
+    setMostrarModalIniciarPuja(true);
+  };
+
+  const handlePujaCreada = () => {
+    setMostrarModalIniciarPuja(false);
+    setProductoSeleccionado(null);
+    cargarDatos();
+  };
+
+  // Nueva función para abrir el modal de pujar
+  const handleAbrirModalPujar = (producto: Producto) => {
+    if (!user) {
+      alert("Debes iniciar sesión para pujar");
+      onNavigate("login");
+      return;
+    }
+
+    setProductoSeleccionado(producto);
+    setMostrarModalPujar(true);
+  };
+
+  // Nueva función para manejar cuando se realiza una puja exitosa
+  const handlePujaRealizada = () => {
+    setMostrarModalPujar(false);
+    setProductoSeleccionado(null);
+    // Usar setTimeout para evitar conflictos de estado
+    setTimeout(() => {
+      cargarDatos();
+    }, 100);
   };
 
   if (loading) {
@@ -170,7 +229,10 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
                 Productos en Subasta
               </h1>
               <p className="text-gray-600">
-                {productos.length} {productos.length === 1 ? "producto disponible" : "productos disponibles"}
+                {productos.length}{" "}
+                {productos.length === 1
+                  ? "producto disponible"
+                  : "productos disponibles"}
               </p>
             </div>
             <button
@@ -197,7 +259,9 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
             <h3 className="text-2xl font-bold text-gray-900 mb-3">
               No hay productos disponibles
             </h3>
-            <p className="text-gray-600 mb-6">Sé el primero en agregar un producto</p>
+            <p className="text-gray-600 mb-6">
+              Sé el primero en agregar un producto
+            </p>
             <button
               onClick={() => setMostrarModal(true)}
               className="px-8 py-3 bg-[#101c22] text-white rounded-xl font-semibold hover:bg-gray-800"
@@ -207,81 +271,136 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {productos.map((producto) => (
-              <div
-                key={producto.id}
-                className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:-translate-y-1"
-              >
-                <div className="relative">
-                  {producto.imagen ? (
-                    <img
-                      src={`http://localhost:3000${producto.imagen}`}
-                      alt={producto.nombre}
-                      className="w-full h-64 object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
-                      <span className="text-gray-400 text-lg">Sin imagen</span>
-                    </div>
-                  )}
+            {productos.map((producto) => {
+              const enPuja = producto.enPuja === true;
+              const pujaFinalizada = producto.pujaFinalizada === true;
+              const precioMostrar =
+                enPuja && producto.pujaActual !== null
+                  ? convertirPrecioANumero(producto.pujaActual)
+                  : convertirPrecioANumero(producto.precio);
 
-                  <div className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-3 py-2 rounded-full flex items-center gap-1 shadow-lg">
-                    <Clock size={14} /> DISPONIBLE
-                  </div>
-                  
-                  {user && (
-                    <button
-                      onClick={() => handleEliminar(producto.id)}
-                      className="absolute top-3 right-3 bg-white text-red-600 w-9 h-9 rounded-full hover:bg-red-50 font-bold shadow-lg border-2 border-red-200 transition-all"
+              return (
+                <div
+                  key={producto.id}
+                  className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:-translate-y-1"
+                >
+                  <div className="relative">
+                    {producto.imagen ? (
+                      <img
+                        src={`http://localhost:3000${producto.imagen}`}
+                        alt={producto.nombre}
+                        className="w-full h-64 object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-400 text-lg">
+                          Sin imagen
+                        </span>
+                      </div>
+                    )}
+
+                    <div
+                      className={`absolute top-3 left-3 text-white text-xs font-bold px-3 py-2 rounded-full flex items-center gap-1 shadow-lg ${
+                        pujaFinalizada
+                          ? "bg-red-500"
+                          : enPuja
+                          ? "bg-orange-500 animate-pulse"
+                          : "bg-green-500"
+                      }`}
                     >
-                      ×
-                    </button>
-                  )}
-                </div>
-                
-                <div className="p-5">
-                  <h3 className="text-base font-bold text-gray-900 mb-3 line-clamp-2 min-h-[48px]">
-                    {producto.nombre}
-                  </h3>
-                  
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                    {producto.descripcion}
-                  </p>
-                  
-                  <div className="mb-4 bg-blue-50 rounded-2xl p-4">
-                    <p className="text-xs text-gray-600 mb-1">Precio base</p>
-                    <p className="text-3xl font-bold text-blue-600">
-                      {formatearPrecioConSimbolo(producto.precio)}
+                      <Clock size={14} />
+                      {pujaFinalizada
+                        ? "FINALIZADA"
+                        : enPuja
+                        ? "EN PUJA"
+                        : "DISPONIBLE"}
+                    </div>
+
+                    {user && (
+                      <button
+                        onClick={() => handleEliminar(producto.id)}
+                        className="absolute top-3 right-3 bg-white text-red-600 w-9 h-9 rounded-full hover:bg-red-50 font-bold shadow-lg border-2 border-red-200 transition-all"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="p-5">
+                    <h3 className="text-base font-bold text-gray-900 mb-3 line-clamp-2 min-h-[48px]">
+                      {producto.nombre}
+                    </h3>
+
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                      {producto.descripcion}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Disponibles: {producto.disponibilidad}
-                    </p>
+
+                    <div className="mb-4 bg-blue-50 rounded-2xl p-4">
+                      <p className="text-xs text-gray-600 mb-1">
+                        {enPuja ? "Puja actual" : "Precio base"}
+                      </p>
+                      <p className="text-3xl font-bold text-blue-600">
+                        {formatearPrecioConSimbolo(precioMostrar)}
+                      </p>
+                      {enPuja && producto.incrementoMinimo && (
+                        <p className="text-xs text-green-600 mt-1 font-semibold">
+                          Incremento:{" "}
+                          {formatearPrecioConSimbolo(
+                            convertirPrecioANumero(producto.incrementoMinimo)
+                          )}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-500 mt-1">
+                        Disponibles: {producto.disponibilidad}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs text-gray-600 mb-4 pb-4 border-b border-gray-200">
+                      <span className="bg-purple-50 px-3 py-1.5 rounded-full truncate">
+                        {producto.subcategoria?.nombre || "Sin categoría"}
+                      </span>
+                    </div>
+
+                    {user ? (
+                      <div className="space-y-2">
+                        {!enPuja && !pujaFinalizada && (
+                          <button
+                            onClick={() => handleIniciarPuja(producto)}
+                            className="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all shadow-md flex items-center justify-center gap-2"
+                          >
+                            <Gavel size={18} />
+                            Iniciar Puja
+                          </button>
+                        )}
+                        {enPuja && !pujaFinalizada && (
+                          <button
+                            onClick={() => handleAbrirModalPujar(producto)}
+                            className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md"
+                          >
+                            💰 Pujar Ahora
+                          </button>
+                        )}
+                        {pujaFinalizada && (
+                          <button
+                            disabled
+                            className="w-full py-3 bg-gray-400 text-white font-bold rounded-xl cursor-not-allowed opacity-60"
+                          >
+                            Puja Finalizada
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => onNavigate("login")}
+                        className="w-full py-3 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-xl transition-all shadow-md"
+                      >
+                        Iniciar sesión para pujar
+                      </button>
+                    )}
                   </div>
-                  
-                  <div className="flex items-center justify-between text-xs text-gray-600 mb-4 pb-4 border-b border-gray-200">
-                    <span className="bg-purple-50 px-3 py-1.5 rounded-full truncate">
-                      {producto.subcategoria?.nombre || 'Sin categoría'}
-                    </span>
-                  </div>
-                  
-                  {user ? (
-                    <button
-                      onClick={() => alert('Funcionalidad de pujar próximamente')}
-                      className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md"
-                    >
-                      Pujar
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => onNavigate("login")}
-                      className="w-full py-3 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-xl transition-all shadow-md"
-                    >
-                      Iniciar sesión para pujar
-                    </button>
-                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -297,10 +416,15 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
 
       {/* Modal Crear Producto */}
       {mostrarModal && (
-        <div className="fixed inset-0 backdrop-blur-md bg-black/40 flex items-center justify-center z-50 p-4">
+        <div
+          key="modal-crear-producto"
+          className="fixed inset-0 backdrop-blur-md bg-black/40 flex items-center justify-center z-50 p-4"
+        >
           <div className="bg-white rounded-3xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
             <div className="bg-[#101c22] px-8 py-6 flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-white">Agregar nuevo producto</h2>
+              <h2 className="text-2xl font-bold text-white">
+                Agregar nuevo producto
+              </h2>
               <button
                 onClick={() => setMostrarModal(false)}
                 className="text-white hover:text-gray-200 p-2 hover:bg-white/20 rounded-full transition-colors"
@@ -311,7 +435,6 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
             </div>
 
             <div className="flex">
-              {/* Previsualización de imagen */}
               <div className="w-2/5 bg-gradient-to-br from-gray-100 to-gray-200 p-8 flex flex-col items-center justify-center border-r">
                 <div className="w-full aspect-square bg-white rounded-2xl shadow-inner overflow-hidden mb-6 relative group border-2 border-dashed border-gray-300 hover:border-[#101c22] transition-all">
                   <input
@@ -324,22 +447,23 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
                   />
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
                     {imagenPreview ? (
-                      <img 
-                        src={imagenPreview} 
-                        alt="Previsualización" 
+                      <img
+                        src={imagenPreview}
+                        alt="Previsualización"
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <div className="text-gray-400 group-hover:text-[#101c22] transition-colors flex flex-col items-center">
                         <Upload size={48} />
-                        <span className="text-sm font-bold mt-2">Subir imagen</span>
+                        <span className="text-sm font-bold mt-2">
+                          Subir imagen
+                        </span>
                       </div>
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Formulario */}
               <div className="w-3/5 p-8 overflow-y-auto max-h-[calc(90vh-88px)]">
                 <form onSubmit={handleCrearProducto} className="space-y-6">
                   <div>
@@ -350,7 +474,9 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
                       type="text"
                       required
                       value={formData.nombre}
-                      onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, nombre: e.target.value })
+                      }
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#101c22] focus:border-transparent"
                       disabled={enviando}
                     />
@@ -363,7 +489,12 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
                     <textarea
                       required
                       value={formData.descripcion}
-                      onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          descripcion: e.target.value,
+                        })
+                      }
                       rows={4}
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#101c22] focus:border-transparent resize-none"
                       disabled={enviando}
@@ -380,7 +511,9 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
                         step="0.01"
                         required
                         value={formData.precio}
-                        onChange={(e) => setFormData({ ...formData, precio: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, precio: e.target.value })
+                        }
                         className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#101c22] focus:border-transparent"
                         disabled={enviando}
                       />
@@ -395,7 +528,12 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
                         min="1"
                         required
                         value={formData.disponibilidad}
-                        onChange={(e) => setFormData({ ...formData, disponibilidad: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            disponibilidad: e.target.value,
+                          })
+                        }
                         className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#101c22] focus:border-transparent"
                         disabled={enviando}
                       />
@@ -409,7 +547,12 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
                     <select
                       required
                       value={formData.subcategoriaId}
-                      onChange={(e) => setFormData({ ...formData, subcategoriaId: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          subcategoriaId: e.target.value,
+                        })
+                      }
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#101c22] focus:border-transparent"
                       disabled={enviando}
                     >
@@ -442,7 +585,7 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
                           Creando...
                         </>
                       ) : (
-                        'Crear Producto'
+                        "Crear Producto"
                       )}
                     </button>
                   </div>
@@ -450,6 +593,37 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Modal Iniciar Puja */}
+      {mostrarModalIniciarPuja && productoSeleccionado && (
+        <div key="modal-iniciar-puja">
+          <ModalIniciarPuja
+            productoId={productoSeleccionado.id}
+            productoNombre={productoSeleccionado.nombre}
+            onClose={() => {
+              setMostrarModalIniciarPuja(false);
+              setProductoSeleccionado(null);
+            }}
+            onSuccess={handlePujaCreada}
+          />
+        </div>
+      )}
+
+      {/* Modal Pujar */}
+      {mostrarModalPujar && productoSeleccionado && (
+        <div key="modal-pujar">
+          <ModalPujar
+            productoId={productoSeleccionado.id}
+            productoNombre={productoSeleccionado.nombre}
+            user={user}
+            onClose={() => {
+              setMostrarModalPujar(false);
+              setProductoSeleccionado(null);
+            }}
+            onSuccess={handlePujaRealizada}
+          />
         </div>
       )}
     </div>
