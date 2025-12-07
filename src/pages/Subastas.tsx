@@ -21,11 +21,8 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
   const [error, setError] = useState<string | null>(null);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [enviando, setEnviando] = useState(false);
-
-  // Estados para el modal de iniciar puja
   const [mostrarModalIniciarPuja, setMostrarModalIniciarPuja] = useState(false);
 
-  // Estados para el modal de pujar
   const [mostrarModalPujar, setMostrarModalPujar] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] =
     useState<Producto | null>(null);
@@ -107,8 +104,6 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
         disponibilidad: parseInt(formData.disponibilidad),
         subcategoriaId: parseInt(formData.subcategoriaId),
       };
-
-      // Solo agregar imagen si existe
       if (formData.imagen) {
         nuevoProducto.imagen = formData.imagen;
       }
@@ -168,7 +163,6 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
     cargarDatos();
   };
 
-  // Nueva función para abrir el modal de pujar
   const handleAbrirModalPujar = (producto: Producto) => {
     if (!user) {
       alert("Debes iniciar sesión para pujar");
@@ -180,11 +174,11 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
     setMostrarModalPujar(true);
   };
 
-  // Nueva función para manejar cuando se realiza una puja exitosa
+ 
   const handlePujaRealizada = () => {
     setMostrarModalPujar(false);
     setProductoSeleccionado(null);
-    // Usar setTimeout para evitar conflictos de estado
+
     setTimeout(() => {
       cargarDatos();
     }, 100);
@@ -205,7 +199,7 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-600 text-xl mb-4">⚠️ Error</div>
+          <div className="text-red-600 text-xl mb-4">Error</div>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={cargarDatos}
@@ -377,7 +371,7 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
                             onClick={() => handleAbrirModalPujar(producto)}
                             className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md"
                           >
-                            💰 Pujar Ahora
+                            Pujar Ahora
                           </button>
                         )}
                         {pujaFinalizada && (
@@ -413,8 +407,6 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
           </button>
         </div>
       </div>
-
-      {/* Modal Crear Producto */}
       {mostrarModal && (
         <div
           key="modal-crear-producto"
@@ -596,7 +588,6 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
         </div>
       )}
 
-      {/* Modal Iniciar Puja */}
       {mostrarModalIniciarPuja && productoSeleccionado && (
         <div key="modal-iniciar-puja">
           <ModalIniciarPuja
@@ -611,7 +602,6 @@ const Subastas: React.FC<SubastasProps> = ({ user, onNavigate }) => {
         </div>
       )}
 
-      {/* Modal Pujar */}
       {mostrarModalPujar && productoSeleccionado && (
         <div key="modal-pujar">
           <ModalPujar

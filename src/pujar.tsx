@@ -1,4 +1,4 @@
-// src/components/ModalPujar.tsx
+// src/pujar.tsx
 import React, { useState, useEffect } from "react";
 import {
   X,
@@ -8,10 +8,10 @@ import {
   Clock,
   User as UserIcon,
 } from "lucide-react";
-import { pujasAPI } from "../src/services/api";
-import type { DatosPujaProducto } from "../src/services/api";
-import { convertirPrecioANumero } from "../src/types/Producto";
-import { formatearPrecioConSimbolo } from "../src/utils/helpers";
+import { pujasAPI } from "./services/api";
+import type { DatosPujaProducto } from "./services/api";
+import { convertirPrecioANumero } from "./types/Producto";
+import { formatearPrecioConSimbolo } from "./utils/helpers";
 
 interface ModalPujarProps {
   productoId: number;
@@ -42,8 +42,6 @@ export const ModalPujar: React.FC<ModalPujarProps> = ({
       setCargando(true);
       const response = await pujasAPI.obtenerPujasProducto(productoId);
       setDatosPuja(response.data);
-
-      // Establecer el monto mínimo sugerido
       const proximoMonto =
         response.data.producto.proximoMontoMinimo ||
         convertirPrecioANumero(response.data.producto.pujaActual) +
@@ -140,7 +138,7 @@ export const ModalPujar: React.FC<ModalPujarProps> = ({
     <div className="fixed inset-0 backdrop-blur-md bg-black/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-5 flex justify-between items-center rounded-t-3xl sticky top-0 z-10">
-          <h2 className="text-xl font-bold text-white">💰 Realizar Puja</h2>
+          <h2 className="text-xl font-bold text-white">Realizar Puja</h2>
           <button
             onClick={onClose}
             className="text-white hover:text-gray-200 p-2 hover:bg-white/20 rounded-full transition-colors"
@@ -268,7 +266,7 @@ export const ModalPujar: React.FC<ModalPujarProps> = ({
                 placeholder={`Mínimo: ${proximoMontoMinimo.toFixed(2)}`}
               />
               <p className="text-xs text-gray-500 mt-1">
-                💡 Tu puja debe ser al menos{" "}
+                Tu puja debe ser al menos{" "}
                 {formatearPrecioConSimbolo(proximoMontoMinimo)}
               </p>
             </div>
@@ -294,7 +292,7 @@ export const ModalPujar: React.FC<ModalPujarProps> = ({
                     Enviando...
                   </>
                 ) : (
-                  <>💰 Confirmar Puja</>
+                  <>Confirmar Puja</>
                 )}
               </button>
             </div>

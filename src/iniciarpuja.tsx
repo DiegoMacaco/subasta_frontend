@@ -1,7 +1,7 @@
-// src/components/ModalIniciarPuja.tsx
+// src/iniciarpuja.tsx
 import React, { useState } from "react";
 import { X, Loader2, Calendar, DollarSign, TrendingUp } from "lucide-react";
-import { pujasAPI } from "../src/services/api";
+import { pujasAPI } from "./services/api";
 
 interface ModalIniciarPujaProps {
   productoId: number;
@@ -28,8 +28,6 @@ export const ModalIniciarPuja: React.FC<ModalIniciarPujaProps> = ({
 
     try {
       setEnviando(true);
-
-      // Convertir la fecha local a ISO string
       const fechaISO = new Date(formData.fechaFinPuja).toISOString();
 
       await pujasAPI.iniciarPuja(productoId, {
@@ -50,7 +48,6 @@ export const ModalIniciarPuja: React.FC<ModalIniciarPujaProps> = ({
     }
   };
 
-  // Obtener fecha mínima (1 hora desde ahora)
   const getMinDate = () => {
     const now = new Date();
     now.setHours(now.getHours() + 1);
@@ -61,7 +58,7 @@ export const ModalIniciarPuja: React.FC<ModalIniciarPujaProps> = ({
     <div className="fixed inset-0 backdrop-blur-md bg-black/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full">
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-5 flex justify-between items-center rounded-t-3xl">
-          <h2 className="text-xl font-bold text-white">🎯 Iniciar Puja</h2>
+          <h2 className="text-xl font-bold text-white">Iniciar Puja</h2>
           <button
             onClick={onClose}
             className="text-white hover:text-gray-200 p-2 hover:bg-white/20 rounded-full transition-colors"
@@ -72,13 +69,11 @@ export const ModalIniciarPuja: React.FC<ModalIniciarPujaProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Producto info */}
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl border-2 border-blue-200">
             <p className="text-xs text-gray-600 mb-1">Producto seleccionado:</p>
             <p className="font-bold text-gray-900 text-lg">{productoNombre}</p>
           </div>
 
-          {/* Precio inicial */}
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
               <DollarSign size={16} className="text-blue-600" />
@@ -98,11 +93,10 @@ export const ModalIniciarPuja: React.FC<ModalIniciarPujaProps> = ({
               placeholder="Ej: 100.00"
             />
             <p className="text-xs text-gray-500 mt-1">
-              💡 Este será el precio mínimo para la primera puja
+              Este será el precio mínimo para la primera puja
             </p>
           </div>
 
-          {/* Incremento mínimo */}
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
               <TrendingUp size={16} className="text-green-600" />
@@ -122,11 +116,10 @@ export const ModalIniciarPuja: React.FC<ModalIniciarPujaProps> = ({
               placeholder="Ej: 5.00"
             />
             <p className="text-xs text-gray-500 mt-1">
-              💡 Cada nueva puja debe superar la anterior por este monto
+               Cada nueva puja debe superar la anterior por este monto
             </p>
           </div>
 
-          {/* Fecha de finalización */}
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
               <Calendar size={16} className="text-purple-600" />
@@ -144,7 +137,7 @@ export const ModalIniciarPuja: React.FC<ModalIniciarPujaProps> = ({
               disabled={enviando}
             />
             <p className="text-xs text-gray-500 mt-1">
-              💡 La puja cerrará automáticamente en esta fecha
+              La puja cerrará automáticamente en esta fecha
             </p>
           </div>
 
@@ -169,7 +162,7 @@ export const ModalIniciarPuja: React.FC<ModalIniciarPujaProps> = ({
                   Iniciando...
                 </>
               ) : (
-                <>🚀 Iniciar Puja</>
+                <>Iniciar Puja</>
               )}
             </button>
           </div>
